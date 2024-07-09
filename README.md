@@ -1,3 +1,5 @@
 # Boids Simulation
 
-[![YouTube](http://i.ytimg.com/vi/zZ3n-WtWS0M/hqdefault.jpg)](https://www.youtube.com/watch?v=zZ3n-WtWS0M)
+Simulating flocking behavior of birds using the Boids Algorithm
+
+Video demonstration [here](https://www.youtube.com/watch?v=zZ3n-WtWS0M)
