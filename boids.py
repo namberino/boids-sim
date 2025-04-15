@@ -9,7 +9,7 @@ width, height = 1400, 850
 screen = pygame.display.set_mode((width, height))
 manager = pygame_gui.UIManager((width, height))
 
-# set up sliders
+# set up pygame sliders
 coherence_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect((10, 40), (200, 30)),
                                                           start_value=0.005,
                                                           value_range=(0, 0.1),
@@ -27,7 +27,7 @@ visual_range_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygam
                                                              value_range=(20, 150),
                                                              manager=manager)
 
-# set up labels
+# set up slider labels
 coherence_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((220, 40), (100, 30)),
                                               text="Coherence",
                                               manager=manager)
@@ -41,11 +41,11 @@ visual_range_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((220,
                                                  text="Visual Range",
                                                  manager=manager)
 
+# boids number and boids list
 num_boids = 100
-
 boids = []
 
-# initialize the boids
+# initialize n boids with random position and velocity
 def init_boids():
     for _ in range(num_boids):
         boids.append({
@@ -56,11 +56,11 @@ def init_boids():
             'history': [],
         })
 
-# calculate distance between two boids
+# calculate euclidean distance between two boids
 def distance(boid1, boid2):
     return math.sqrt((boid1['x'] - boid2['x']) ** 2 + (boid1['y'] - boid2['y']) ** 2)
 
-# constrain a boid to within the window
+# constrain a boid to within the window by adjusting their velocities
 def keep_within_bounds(boid):
     margin = 200
     turn_factor = 1
@@ -74,7 +74,7 @@ def keep_within_bounds(boid):
     if boid['y'] > height - margin:
         boid['dy'] -= turn_factor
 
-# fly towards the center of mass
+# coherence: fly towards the center of mass
 def fly_towards_center(boid, coherence_factor, visual_range):
     centerX, centerY = 0, 0
     num_neighbors = 0
@@ -91,7 +91,7 @@ def fly_towards_center(boid, coherence_factor, visual_range):
         boid['dx'] += (centerX - boid['x']) * coherence_factor
         boid['dy'] += (centerY - boid['y']) * coherence_factor
 
-# avoid other boids that are close
+# separation: avoid other boids that are close
 def avoid_others(boid, separation_factor, visual_range):
     min_distance = 10
     moveX, moveY = 0, 0
@@ -105,7 +105,7 @@ def avoid_others(boid, separation_factor, visual_range):
     boid['dx'] += moveX * separation_factor
     boid['dy'] += moveY * separation_factor
 
-# match velocity with nearby boids
+# alignment: match velocity with nearby boids
 def match_velocity(boid, alignment_factor, visual_range):
     avgDX, avgDY = 0, 0
     num_neighbors = 0
@@ -122,7 +122,7 @@ def match_velocity(boid, alignment_factor, visual_range):
         boid['dx'] += (avgDX - boid['dx']) * alignment_factor
         boid['dy'] += (avgDY - boid['dy']) * alignment_factor
 
-# limit the speed
+# limit the speed of the boids
 def limit_speed(boid):
     speed_limit = 15
     speed = math.sqrt(boid['dx'] ** 2 + boid['dy'] ** 2)
